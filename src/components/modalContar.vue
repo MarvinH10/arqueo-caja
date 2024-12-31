@@ -73,7 +73,7 @@ export default {
                         </button>
 
                         <div class="flex items-center">
-                            <span class="text-white mx-4">{{ den.cantidad }}</span>
+                            <span class="text-white mx-3">{{ den.cantidad }}</span>
                         </div>
 
                         <button @click="incrementar(index)"
@@ -81,7 +81,7 @@ export default {
                             <i class="fas fa-plus"></i>
                         </button>
                     </div>
-                    <span class="text-white flex-1 text-left ml-1">S/. {{ den.valor.toFixed(2) }}</span>
+                    <span class="text-white lg:text-sm text-[9.4px] flex-1 text-left ml-1">S/. {{ den.valor.toFixed(2) }}</span>
                 </div>
 
                 <div v-for="(den, index) in denominaciones.slice(5, 11)" :key="`col2-${index}`"
@@ -93,7 +93,7 @@ export default {
                         </button>
 
                         <div class="flex items-center">
-                            <span class="text-white mx-4">{{ den.cantidad }}</span>
+                            <span class="text-white mx-3">{{ den.cantidad }}</span>
                         </div>
 
                         <button @click="incrementar(index + 5)"
@@ -101,7 +101,7 @@ export default {
                             <i class="fas fa-plus"></i>
                         </button>
                     </div>
-                    <span class="text-white flex-1 text-left ml-1">S/. {{ den.valor.toFixed(2) }}</span>
+                    <span class="text-white lg:text-sm text-[9.4px] flex-1 text-left ml-1">S/. {{ den.valor.toFixed(2) }}</span>
                 </div>
             </div>
 
