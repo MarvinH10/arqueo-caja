@@ -1,5 +1,6 @@
 <script>
 import Input from './components/input.vue'
+import * as XLSX from 'xlsx'
 
 export default {
   components: {
@@ -25,6 +26,43 @@ export default {
     },
     updateSaldoPagoEfectivo(newSaldo) {
       this.saldoPagoEfectivo = newSaldo;
+    },
+    downloadExcel() {
+      const data = [
+        ["𝐃𝐞𝐬𝐜𝐫𝐢𝐩𝐜𝐢ó𝐧", "𝐌𝐨𝐧𝐭𝐨"],
+        ["Apertura", `S/. ${this.saldoInicial}`],
+        ["Pagos en Efectivo", `S/. ${this.saldoPagoEfectivo}`],
+        ["Total Efectivo", `S/. ${this.totalEfectivo}`],
+        ["Banco Contado", `S/. ${this.saldoBanco}`],
+        ["Yape Contado", `S/. ${this.saldoYape}`],
+        ["Total", `S/. ${this.total}`]
+      ];
+
+      const ws = XLSX.utils.aoa_to_sheet(data);
+
+      const style = {
+        font: { bold: true },
+        fill: { fgColor: { rgb: "C6EFCE" } },
+      };
+
+      const totalRowIndexes = [3, 7];
+      
+      totalRowIndexes.forEach(index => {
+        const cellA = `A${index + 2}`;
+        const cellB = `B${index + 2}`;
+        
+        if (ws[cellA]) {
+          ws[cellA].s = style;
+        }
+        if (ws[cellB]) {
+          ws[cellB].s = style;
+        }
+      });
+
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "Cuadre de Caja");
+
+      XLSX.writeFile(wb, "cuadre_de_caja.xlsx");
     }
   },
   computed: {
@@ -118,7 +156,7 @@ export default {
             </div>
 
             <div class="flex justify-end mt-6 md:mt-10">
-              <button
+              <button @click="downloadExcel"
                 class="bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded shadow flex items-center gap-2">
                 <i class="fas fa-file-excel text-white"></i>
                 Descargar
