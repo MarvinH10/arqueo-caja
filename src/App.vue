@@ -42,8 +42,11 @@ export default {
 
 <template>
   <div class="min-h-screen bg-[#181818] text-white flex flex-col gap-4 md:gap-8 relative">
-    <div class="relative">
-      <div class="text-xl md:text-2xl font-bold mt-4 md:mt-6 ml-4 md:ml-6 mb-4 md:mb-6">CONTROL DE CUADRE DE CAJA</div>
+    <div class="relative flex items-center gap-4">
+      <img src="/public/blancokdosh.png" alt="Kdosh Store" class="ml-4 w-[50px] h-360px] md:w-[80px] md:h-[60px]">
+      <div class="text-xl md:text-2xl font-bold mt-4 md:mt-6 ml-1 md:ml-6 mb-4 md:mb-6">
+        CONTROL DE CUADRE DE CAJA
+      </div>
       <div class="absolute top-full left-0 w-full border-b border-gray-400"></div>
     </div>
 
