@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 import Input from './components/input.vue'
 import * as XLSX from 'xlsx'
 
