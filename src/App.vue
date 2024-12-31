@@ -1,8 +1,9 @@
 <script lang="ts">
-import Input from './components/input.vue'
-import * as XLSX from 'xlsx'
+import { defineComponent } from 'vue';
+import Input from './components/input.vue';
+import * as XLSX from 'xlsx';
 
-export default {
+export default defineComponent({
   components: {
     Input,
   },
@@ -12,45 +13,43 @@ export default {
       saldoBanco: '0.00',
       saldoYape: '0.00',
       saldoPagoEfectivo: '0.00',
-    }
+    };
   },
   methods: {
-    updateSaldo(newSaldo) {
+    updateSaldo(newSaldo: string) {
       this.saldoInicial = newSaldo;
     },
-    updateSaldoBanco(newSaldo) {
+    updateSaldoBanco(newSaldo: string) {
       this.saldoBanco = newSaldo;
     },
-    updateSaldoYape(newSaldo) {
+    updateSaldoYape(newSaldo: string) {
       this.saldoYape = newSaldo;
     },
-    updateSaldoPagoEfectivo(newSaldo) {
+    updateSaldoPagoEfectivo(newSaldo: string) {
       this.saldoPagoEfectivo = newSaldo;
     },
     downloadExcel() {
       const data = [
-        ["𝐃𝐞𝐬𝐜𝐫𝐢𝐩𝐜𝐢ó𝐧", "𝐌𝐨𝐧𝐭𝐨"],
-        ["Apertura", `S/. ${this.saldoInicial}`],
-        ["Pagos en Efectivo", `S/. ${this.saldoPagoEfectivo}`],
-        ["Total Efectivo", `S/. ${this.totalEfectivo}`],
-        ["Banco Contado", `S/. ${this.saldoBanco}`],
-        ["Yape Contado", `S/. ${this.saldoYape}`],
-        ["Total", `S/. ${this.total}`]
+        ['𝐃𝐞𝐬𝐜𝐫𝐢𝐩𝐜𝐢ó𝐧', '𝐌𝐨𝐧𝐭𝐨'],
+        ['Apertura', `S/. ${this.saldoInicial}`],
+        ['Pagos en Efectivo', `S/. ${this.saldoPagoEfectivo}`],
+        ['Total Efectivo', `S/. ${this.totalEfectivo}`],
+        ['Banco Contado', `S/. ${this.saldoBanco}`],
+        ['Yape Contado', `S/. ${this.saldoYape}`],
+        ['Total', `S/. ${this.total}`],
       ];
 
       const ws = XLSX.utils.aoa_to_sheet(data);
 
       const style = {
         font: { bold: true },
-        fill: { fgColor: { rgb: "C6EFCE" } },
+        fill: { fgColor: { rgb: 'C6EFCE' } },
       };
 
       const totalRowIndexes = [3, 7];
-      
       totalRowIndexes.forEach(index => {
         const cellA = `A${index + 2}`;
         const cellB = `B${index + 2}`;
-        
         if (ws[cellA]) {
           ws[cellA].s = style;
         }
@@ -60,22 +59,26 @@ export default {
       });
 
       const wb = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(wb, ws, "Cuadre de Caja");
+      XLSX.utils.book_append_sheet(wb, ws, 'Cuadre de Caja');
 
-      XLSX.writeFile(wb, "cuadre_de_caja.xlsx");
-    }
+      XLSX.writeFile(wb, 'cuadre_de_caja.xlsx');
+    },
   },
   computed: {
-    totalEfectivo() {
+    totalEfectivo(): string {
       const total = parseFloat(this.saldoInicial) + parseFloat(this.saldoPagoEfectivo);
       return total.toFixed(2);
     },
-    total() {
-      const totalSaldo = parseFloat(this.saldoBanco) + parseFloat(this.saldoYape) + parseFloat(this.saldoPagoEfectivo) + parseFloat(this.saldoInicial);
+    total(): string {
+      const totalSaldo =
+        parseFloat(this.saldoBanco) +
+        parseFloat(this.saldoYape) +
+        parseFloat(this.saldoPagoEfectivo) +
+        parseFloat(this.saldoInicial);
       return totalSaldo.toFixed(2);
-    }
-  }
-}
+    },
+  },
+});
 </script>
 
 <template>
