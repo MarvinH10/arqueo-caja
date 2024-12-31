@@ -1,49 +1,60 @@
-<script setup lang="ts">
-import { ref, defineEmits } from 'vue';
+<script lang="ts">
+import { ref, watch, onMounted } from 'vue'
 
 interface Denominacion {
     valor: number;
     cantidad: number;
 }
 
-const emit = defineEmits(['confirmar', 'cancelar']);
+export default {
+    props: {
+        initialDenominaciones: {
+            type: Array as () => Denominacion[],
+            required: true
+        }
+    },
+    emits: ['confirmar', 'cancelar'],
+    setup(props, { emit }) {
+        const denominaciones = ref<Denominacion[]>([]);
+        const total = ref(0);
 
-const denominaciones = ref<Denominacion[]>([
-    { valor: 200, cantidad: 0 },
-    { valor: 100, cantidad: 0 },
-    { valor: 50, cantidad: 0 },
-    { valor: 20, cantidad: 0 },
-    { valor: 10, cantidad: 0 },
-]);
+        watch(denominaciones, () => calcularTotal(), { deep: true });
 
-const total = ref(0);
+        onMounted(() => {
+            denominaciones.value = [...props.initialDenominaciones];
+        });
 
-const incrementar = (index: number) => {
-    denominaciones.value[index].cantidad++;
-    calcularTotal();
-};
+        const incrementar = (index: number) => {
+            denominaciones.value[index].cantidad++;
+        };
 
-const decrementar = (index: number) => {
-    if (denominaciones.value[index].cantidad > 0) {
-        denominaciones.value[index].cantidad--;
-        calcularTotal();
+        const decrementar = (index: number) => {
+            if (denominaciones.value[index].cantidad > 0) {
+                denominaciones.value[index].cantidad--;
+            }
+        };
+
+        const calcularTotal = () => {
+            total.value = denominaciones.value.reduce((sum, den) => sum + (den.valor * den.cantidad), 0);
+        };
+
+        const confirmar = () => {
+            emit('confirmar', denominaciones.value);
+        };
+
+        const cancelar = () => {
+            emit('cancelar');
+        };
+
+        return {
+            denominaciones,
+            total,
+            incrementar,
+            decrementar,
+            confirmar,
+            cancelar
+        };
     }
-};
-
-const calcularTotal = () => {
-    total.value = denominaciones.value.reduce((sum, den) => {
-        return sum + (den.valor * den.cantidad);
-    }, 0);
-};
-
-const resetear = () => {
-    denominaciones.value.forEach(den => den.cantidad = 0);
-    total.value = 0;
-    emit('cancelar');
-};
-
-const confirmar = () => {
-    emit('confirmar', total.value);
 };
 </script>
 
@@ -52,23 +63,45 @@ const confirmar = () => {
         <div class="bg-[#181818] p-6 rounded-lg shadow-xl w-full max-w-md">
             <h2 class="text-white text-xl font-bold mb-4">MONEDAS/BILLETES</h2>
 
-            <div class="space-y-3">
-                <div v-for="(den, index) in denominaciones" :key="index"
-                    class="flex items-center justify-between bg-[#1E1E1E] p-2 rounded">
-                    <button @click="decrementar(index)"
-                        class="w-8 h-8 flex items-center justify-center text-white hover:bg-gray-700 rounded">
-                        <i class="fas fa-minus"></i>
-                    </button>
+            <div class="grid grid-cols-2 gap-3">
+                <div v-for="(den, index) in denominaciones.slice(0, 5)" :key="`col1-${index}`"
+                    class="flex items-center justify-between rounded p-2">
+                    <div class="bg-[#1E1E1E] flex items-center rounded">
+                        <button @click="decrementar(index)" :disabled="den.cantidad <= 0"
+                            class="w-8 h-8 flex items-center justify-center text-white bg-gray-500 hover:bg-gray-600 rounded disabled:opacity-50 disabled:hover:bg-gray-500 disabled:cursor-not-allowed">
+                            <i class="fas fa-minus"></i>
+                        </button>
 
-                    <div class="flex items-center">
-                        <span class="text-white">S/. {{ den.valor }}</span>
-                        <span class="text-white mx-4">{{ den.cantidad }}</span>
+                        <div class="flex items-center">
+                            <span class="text-white mx-4">{{ den.cantidad }}</span>
+                        </div>
+
+                        <button @click="incrementar(index)"
+                            class="w-8 h-8 flex items-center justify-center text-white bg-gray-500 hover:bg-gray-600 rounded">
+                            <i class="fas fa-plus"></i>
+                        </button>
                     </div>
+                    <span class="text-white flex-1 text-left ml-1">S/. {{ den.valor.toFixed(2) }}</span>
+                </div>
 
-                    <button @click="incrementar(index)"
-                        class="w-8 h-8 flex items-center justify-center text-white hover:bg-gray-700 rounded">
-                        <i class="fas fa-plus"></i>
-                    </button>
+                <div v-for="(den, index) in denominaciones.slice(5, 11)" :key="`col2-${index}`"
+                    class="flex items-center justify-between rounded p-2">
+                    <div class="bg-[#1E1E1E] flex items-center rounded">
+                        <button @click="decrementar(index + 5)" :disabled="den.cantidad <= 0"
+                            class="w-8 h-8 flex items-center justify-center text-white bg-gray-500 hover:bg-gray-600 rounded disabled:opacity-50 disabled:hover:bg-gray-500 disabled:cursor-not-allowed">
+                            <i class="fas fa-minus"></i>
+                        </button>
+
+                        <div class="flex items-center">
+                            <span class="text-white mx-4">{{ den.cantidad }}</span>
+                        </div>
+
+                        <button @click="incrementar(index + 5)"
+                            class="w-8 h-8 flex items-center justify-center text-white bg-gray-500 hover:bg-gray-600 rounded">
+                            <i class="fas fa-plus"></i>
+                        </button>
+                    </div>
+                    <span class="text-white flex-1 text-left ml-1">S/. {{ den.valor.toFixed(2) }}</span>
                 </div>
             </div>
 
@@ -82,7 +115,7 @@ const confirmar = () => {
                         class="flex-1 bg-green-600 text-white py-2 px-4 rounded hover:bg-green-700 transition-colors">
                         CONFIRMAR
                     </button>
-                    <button @click="resetear"
+                    <button @click="cancelar"
                         class="flex-1 bg-red-600 text-white py-2 px-4 rounded hover:bg-red-700 transition-colors">
                         DESCARTAR
                     </button>
